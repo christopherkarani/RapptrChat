@@ -11,7 +11,7 @@ import SwiftUI
 struct RapptrChatAppApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SignInView()
         }
     }
 }

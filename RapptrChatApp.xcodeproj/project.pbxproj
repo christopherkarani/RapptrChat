@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9ECCE0512955A8E800D26304 /* RapptrChatAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */; };
-		9ECCE0532955A8E800D26304 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0522955A8E800D26304 /* ContentView.swift */; };
+		9ECCE0532955A8E800D26304 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0522955A8E800D26304 /* SignInView.swift */; };
 		9ECCE0552955A8E900D26304 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9ECCE0542955A8E900D26304 /* Assets.xcassets */; };
 		9ECCE0582955A8E900D26304 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9ECCE0572955A8E900D26304 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -16,7 +16,7 @@
 /* Begin PBXFileReference section */
 		9ECCE04D2955A8E800D26304 /* RapptrChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RapptrChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RapptrChatAppApp.swift; sourceTree = "<group>"; };
-		9ECCE0522955A8E800D26304 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		9ECCE0522955A8E800D26304 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		9ECCE0542955A8E900D26304 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9ECCE0572955A8E900D26304 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -52,7 +52,7 @@
 			isa = PBXGroup;
 			children = (
 				9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */,
-				9ECCE0522955A8E800D26304 /* ContentView.swift */,
+				9ECCE0522955A8E800D26304 /* SignInView.swift */,
 				9ECCE0542955A8E900D26304 /* Assets.xcassets */,
 				9ECCE0562955A8E900D26304 /* Preview Content */,
 			);
@@ -137,7 +137,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9ECCE0532955A8E800D26304 /* ContentView.swift in Sources */,
+				9ECCE0532955A8E800D26304 /* SignInView.swift in Sources */,
 				9ECCE0512955A8E800D26304 /* RapptrChatAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
