@@ -6,18 +6,21 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct SignInView: View {
     
-    @State var isLoginMode = false
-    @State var email = ""
-    @State var password = ""
+    @StateObject private var viewModel = ViewModel()
+    
+    init() {
+        FirebaseApp.configure()
+    }
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 16) {
-                    Picker(selection: $isLoginMode) {
+                    Picker(selection: $viewModel.isLoginMode) {
                         Text("Login")
                             .tag(true)
                         Text("Create Account")
@@ -28,31 +31,30 @@ struct SignInView: View {
                     .pickerStyle(SegmentedPickerStyle())
                     
                     
-                    if !isLoginMode {
+                    if !viewModel.isLoginMode {
                         Button {
-                            handleAction()
+                            
                         } label: {
                             Image(systemName: "person.fill")
                                 .font(.system(size: 64))
                                 .padding()
                         } //: Button
                     }
-                    
                     Group {
-                        TextField("Email", text: $email)
+                        TextField("Email", text: $viewModel.email)
                             .keyboardType(.emailAddress)
                             .textInputAutocapitalization(.none )
-                        SecureField("Password", text: $password)
-                    }
+                        SecureField("Password", text: $viewModel.password)
+                    } //: Group
                     .padding(12)
                     .background(.white)
                     
                     Button {
-                        
+                        viewModel.handleAction()
                     } label: {
                         HStack {
                             Spacer()
-                            Text(isLoginMode ? "Log In" : "Create Account")
+                            Text(viewModel.isLoginMode ? "Log In" : "Create Account")
                                 .foregroundColor(.white)
                                 .padding(.vertical, 10)
                                 .font(.system(size: 14, weight: .semibold))
@@ -62,24 +64,120 @@ struct SignInView: View {
                     } //: Button
                 } //: VStack
                 .padding()
-            }
-            .navigationTitle(isLoginMode ? "Log In" : "Create Account")
+                .errorAlert(error: $viewModel.error)
+            } //: ScrollView
+            .navigationTitle(viewModel.isLoginMode ? "Log In" : "Create Account")
             .background(Color(white: 0, opacity: 0.05)
                 .ignoresSafeArea())
-        }
+        } //: NavigationView
+        .navigationViewStyle(.stack)
     }
     
-    private func handleAction() {
-        if isLoginMode {
-            print("Login to firebase with existing credentials")
-        } else {
-            print("Register a new account inside of firebase Auth and then store image in Storage somehow")
-        }
-    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         SignInView()
+    }
+}
+
+
+extension SignInView {
+    @MainActor class ViewModel: ObservableObject {
+        
+        
+        @Published public var error: SignInError?
+        @Published public var isLoginMode = false
+        @Published public var email = ""
+        @Published public var password = ""
+        @Published public var authenticator = FirebaseAuthenticator()
+        
+        
+        /// Handles the Login Action Button
+        public func handleAction() {
+            if isLoginMode {
+                print("Login to firebase with existing credentials")
+            } else {
+                print("Register a new account inside of firebase Auth and then store image in Storage somehow")
+                signUp()
+            }
+        }
+        
+        public func signUp() {
+            authenticator.signUp(with: email, password: password) { result in
+                switch result {
+                case .failure(let err):
+                    self.error = err
+                case .success(()):
+                    print("Success")
+                }
+            }
+        }
+    }
+}
+
+
+public enum SignInError: LocalizedError {
+    case failedLogin(description: String)
+    case failedRegistration(description: String)
+    case error(description: String)
+    
+    init?(error: SignInError?) {
+        guard let err = error else { return nil}
+        self = err
+    }
+    
+    public var errorDescription: String? {
+        switch self {
+        case .failedLogin(description: let description):
+            return "Failed Login: \(description)"
+        case .failedRegistration(description: let description):
+            return "Failed Registration: \(description)"
+        case .error(description: let description):
+            return "Error: \(description)"
+        }
+    }
+}
+
+protocol SignInProtocol {
+    func login(with email: String, password: String)
+    func signUp(with email: String, password: String, completion: @escaping ((Result<(), SignInError>)) -> ())
+}
+
+class FirebaseAuthenticator: ObservableObject, SignInProtocol {
+   // @Published var authError: SignInError?
+    @Published var result: Result<(), SignInError>?
+    
+    func login(with email: String, password: String) {
+        
+    }
+    
+    func signUp(with email: String,
+                password: String,
+                completion: @escaping (Result<(), SignInError>) -> ()) {
+        Auth.auth().createUser(withEmail: email, password: password) { result
+            , error in
+            if let error = error {
+                self.result = .failure(SignInError.failedRegistration(description: error.localizedDescription))
+                completion(.failure(SignInError.failedLogin(description: error.localizedDescription)))
+                return
+            }
+            self.result = .success(())
+            return
+        }
+    }
+}
+
+extension View {
+    func errorAlert(error: Binding<SignInError?>, buttonTitle: String = "OK") -> some View {
+        let signInErr = SignInError(error: error.wrappedValue)
+        return alert(isPresented: .constant(signInErr != nil), error: signInErr) { _ in
+            Button(buttonTitle) {
+                error.wrappedValue = nil
+            }
+        } message: { error in
+            Text(error.recoverySuggestion ?? "")
+        }
     }
 }
