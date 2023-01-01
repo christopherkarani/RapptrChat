@@ -43,7 +43,7 @@ struct SignInView: View {
                     Group {
                         TextField("Email", text: $viewModel.email)
                             .keyboardType(.emailAddress)
-                            .textInputAutocapitalization(.none )
+                            .textInputAutocapitalization(.never)
                         SecureField("Password", text: $viewModel.password)
                     } //: Group
                     .padding(12)
@@ -85,14 +85,11 @@ struct ContentView_Previews: PreviewProvider {
 
 extension SignInView {
     @MainActor class ViewModel: ObservableObject {
-        
-        
         @Published public var error: SignInError?
         @Published public var isLoginMode = false
         @Published public var email = ""
         @Published public var password = ""
         @Published public var authenticator = FirebaseAuthenticator()
-        
         
         /// Handles the Login Action Button
         public func handleAction() {
@@ -106,6 +103,17 @@ extension SignInView {
         
         public func signUp() {
             authenticator.signUp(with: email, password: password) { result in
+                switch result {
+                case .failure(let err):
+                    self.error = err
+                case .success(()):
+                    print("Success")
+                }
+            }
+        }
+        
+        public func singIn() {
+            authenticator.login(with: email, password: password) { result in
                 switch result {
                 case .failure(let err):
                     self.error = err
@@ -141,29 +149,33 @@ public enum SignInError: LocalizedError {
 }
 
 protocol SignInProtocol {
-    func login(with email: String, password: String)
+    func login(with email: String, password: String, completion: @escaping ((Result<(), SignInError>)) -> ())
     func signUp(with email: String, password: String, completion: @escaping ((Result<(), SignInError>)) -> ())
 }
 
-class FirebaseAuthenticator: ObservableObject, SignInProtocol {
-   // @Published var authError: SignInError?
-    @Published var result: Result<(), SignInError>?
-    
-    func login(with email: String, password: String) {
-        
-    }
-    
+class FirebaseAuthenticator: SignInProtocol {
     func signUp(with email: String,
                 password: String,
                 completion: @escaping (Result<(), SignInError>) -> ()) {
         Auth.auth().createUser(withEmail: email, password: password) { result
             , error in
             if let error = error {
-                self.result = .failure(SignInError.failedRegistration(description: error.localizedDescription))
-                completion(.failure(SignInError.failedLogin(description: error.localizedDescription)))
+                completion(.failure(.failedRegistration(description: error.localizedDescription)))
                 return
             }
-            self.result = .success(())
+            return
+        }
+    }
+    
+    func login(with email: String,
+                password: String,
+                completion: @escaping (Result<(), SignInError>) -> ()) {
+        
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            if let error = error {
+                completion(.failure(.failedLogin(description: error.localizedDescription)))
+                return
+            }
             return
         }
     }
