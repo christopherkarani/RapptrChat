@@ -85,7 +85,7 @@ struct ContentView_Previews: PreviewProvider {
 
 extension SignInView {
     @MainActor class ViewModel: ObservableObject {
-        @Published public var error: SignInError?
+        @Published public var error: FirebaseAuthenticator.SignInError?
         @Published public var isLoginMode = false
         @Published public var email = ""
         @Published public var password = ""
@@ -121,75 +121,6 @@ extension SignInView {
                     print("Success")
                 }
             }
-        }
-    }
-}
-
-
-public enum SignInError: LocalizedError {
-    case failedLogin(description: String)
-    case failedRegistration(description: String)
-    case error(description: String)
-    
-    init?(error: SignInError?) {
-        guard let err = error else { return nil}
-        self = err
-    }
-    
-    public var errorDescription: String? {
-        switch self {
-        case .failedLogin(description: let description):
-            return "Failed Login: \(description)"
-        case .failedRegistration(description: let description):
-            return "Failed Registration: \(description)"
-        case .error(description: let description):
-            return "Error: \(description)"
-        }
-    }
-}
-
-protocol SignInProtocol {
-    func login(with email: String, password: String, completion: @escaping ((Result<(), SignInError>)) -> ())
-    func signUp(with email: String, password: String, completion: @escaping ((Result<(), SignInError>)) -> ())
-}
-
-class FirebaseAuthenticator: SignInProtocol {
-    func signUp(with email: String,
-                password: String,
-                completion: @escaping (Result<(), SignInError>) -> ()) {
-        Auth.auth().createUser(withEmail: email, password: password) { result
-            , error in
-            if let error = error {
-                completion(.failure(.failedRegistration(description: error.localizedDescription)))
-                return
-            }
-            return
-        }
-    }
-    
-    func login(with email: String,
-                password: String,
-                completion: @escaping (Result<(), SignInError>) -> ()) {
-        
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                completion(.failure(.failedLogin(description: error.localizedDescription)))
-                return
-            }
-            return
-        }
-    }
-}
-
-extension View {
-    func errorAlert(error: Binding<SignInError?>, buttonTitle: String = "OK") -> some View {
-        let signInErr = SignInError(error: error.wrappedValue)
-        return alert(isPresented: .constant(signInErr != nil), error: signInErr) { _ in
-            Button(buttonTitle) {
-                error.wrappedValue = nil
-            }
-        } message: { error in
-            Text(error.recoverySuggestion ?? "")
         }
     }
 }
