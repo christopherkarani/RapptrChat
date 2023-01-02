@@ -11,8 +11,13 @@
 		9EBD7F72295D9681004EEEE8 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 9EBD7F71295D9681004EEEE8 /* FirebaseFirestore */; };
 		9EBD7F74295D9681004EEEE8 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 9EBD7F73295D9681004EEEE8 /* FirebaseStorage */; };
 		9EBD7F76295DAA83004EEEE8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9EBD7F75295DAA83004EEEE8 /* GoogleService-Info.plist */; };
-		9EBD7F792961C2F9004EEEE8 /* FirebaseAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F782961C2F9004EEEE8 /* FirebaseAuthenticator.swift */; };
-		9EBD7F7C2961C36C004EEEE8 /* View+SignInError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F7B2961C36C004EEEE8 /* View+SignInError.swift */; };
+		9EBD7F792961C2F9004EEEE8 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F782961C2F9004EEEE8 /* FirebaseManager.swift */; };
+		9EBD7F7C2961C36C004EEEE8 /* View+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F7B2961C36C004EEEE8 /* View+Error.swift */; };
+		9EBD7F7E2961F34B004EEEE8 /* AuthenticatedUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F7D2961F34B004EEEE8 /* AuthenticatedUser.swift */; };
+		9EBD7F802961F401004EEEE8 /* AuthProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F7F2961F401004EEEE8 /* AuthProtocol.swift */; };
+		9EBD7F822961F50B004EEEE8 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F812961F50B004EEEE8 /* ImagePicker.swift */; };
+		9EBD7F8529632602004EEEE8 /* StorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F8429632602004EEEE8 /* StorageProtocol.swift */; };
+		9EBD7F8929634081004EEEE8 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F8829634081004EEEE8 /* AppError.swift */; };
 		9ECCE0512955A8E800D26304 /* RapptrChatAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */; };
 		9ECCE0532955A8E800D26304 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0522955A8E800D26304 /* SignInView.swift */; };
 		9ECCE0552955A8E900D26304 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9ECCE0542955A8E900D26304 /* Assets.xcassets */; };
@@ -21,8 +26,13 @@
 
 /* Begin PBXFileReference section */
 		9EBD7F75295DAA83004EEEE8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		9EBD7F782961C2F9004EEEE8 /* FirebaseAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAuthenticator.swift; sourceTree = "<group>"; };
-		9EBD7F7B2961C36C004EEEE8 /* View+SignInError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+SignInError.swift"; sourceTree = "<group>"; };
+		9EBD7F782961C2F9004EEEE8 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
+		9EBD7F7B2961C36C004EEEE8 /* View+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Error.swift"; sourceTree = "<group>"; };
+		9EBD7F7D2961F34B004EEEE8 /* AuthenticatedUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatedUser.swift; sourceTree = "<group>"; };
+		9EBD7F7F2961F401004EEEE8 /* AuthProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProtocol.swift; sourceTree = "<group>"; };
+		9EBD7F812961F50B004EEEE8 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		9EBD7F8429632602004EEEE8 /* StorageProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageProtocol.swift; sourceTree = "<group>"; };
+		9EBD7F8829634081004EEEE8 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		9ECCE04D2955A8E800D26304 /* RapptrChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RapptrChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RapptrChatAppApp.swift; sourceTree = "<group>"; };
 		9ECCE0522955A8E800D26304 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
@@ -48,7 +58,8 @@
 			isa = PBXGroup;
 			children = (
 				9ECCE0522955A8E800D26304 /* SignInView.swift */,
-				9EBD7F782961C2F9004EEEE8 /* FirebaseAuthenticator.swift */,
+				9EBD7F782961C2F9004EEEE8 /* FirebaseManager.swift */,
+				9EBD7F7D2961F34B004EEEE8 /* AuthenticatedUser.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -56,9 +67,27 @@
 		9EBD7F7A2961C35C004EEEE8 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				9EBD7F7B2961C36C004EEEE8 /* View+SignInError.swift */,
+				9EBD7F7B2961C36C004EEEE8 /* View+Error.swift */,
+				9EBD7F812961F50B004EEEE8 /* ImagePicker.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		9EBD7F8629633839004EEEE8 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				9EBD7F7F2961F401004EEEE8 /* AuthProtocol.swift */,
+				9EBD7F8429632602004EEEE8 /* StorageProtocol.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		9EBD7F8729634066004EEEE8 /* Errors */ = {
+			isa = PBXGroup;
+			children = (
+				9EBD7F8829634081004EEEE8 /* AppError.swift */,
+			);
+			path = Errors;
 			sourceTree = "<group>";
 		};
 		9ECCE0442955A8E800D26304 = {
@@ -80,6 +109,8 @@
 		9ECCE04F2955A8E800D26304 /* RapptrChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				9EBD7F8729634066004EEEE8 /* Errors */,
+				9EBD7F8629633839004EEEE8 /* Protocols */,
 				9EBD7F7A2961C35C004EEEE8 /* Helpers */,
 				9EBD7F772961C2E7004EEEE8 /* Authentication */,
 				9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */,
@@ -178,9 +209,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				9ECCE0532955A8E800D26304 /* SignInView.swift in Sources */,
-				9EBD7F7C2961C36C004EEEE8 /* View+SignInError.swift in Sources */,
+				9EBD7F802961F401004EEEE8 /* AuthProtocol.swift in Sources */,
+				9EBD7F7E2961F34B004EEEE8 /* AuthenticatedUser.swift in Sources */,
+				9EBD7F822961F50B004EEEE8 /* ImagePicker.swift in Sources */,
+				9EBD7F8929634081004EEEE8 /* AppError.swift in Sources */,
+				9EBD7F7C2961C36C004EEEE8 /* View+Error.swift in Sources */,
 				9ECCE0512955A8E800D26304 /* RapptrChatAppApp.swift in Sources */,
-				9EBD7F792961C2F9004EEEE8 /* FirebaseAuthenticator.swift in Sources */,
+				9EBD7F792961C2F9004EEEE8 /* FirebaseManager.swift in Sources */,
+				9EBD7F8529632602004EEEE8 /* StorageProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

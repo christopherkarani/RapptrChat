@@ -9,8 +9,8 @@ import SwiftUI
 
 
 extension View {
-    func errorAlert(error: Binding<FirebaseAuthenticator.SignInError?>, buttonTitle: String = "OK") -> some View {
-        let signInErr = FirebaseAuthenticator.SignInError(error: error.wrappedValue)
+    func errorAlert(error: Binding<AppError?>, buttonTitle: String = "OK") -> some View {
+        let signInErr = AppError(error: error.wrappedValue)
         return alert(isPresented: .constant(signInErr != nil), error: signInErr) { _ in
             Button(buttonTitle) {
                 error.wrappedValue = nil

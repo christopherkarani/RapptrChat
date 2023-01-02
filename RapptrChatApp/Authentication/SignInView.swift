@@ -12,10 +12,6 @@ struct SignInView: View {
     
     @StateObject private var viewModel = ViewModel()
     
-    init() {
-        FirebaseApp.configure()
-    }
-    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -33,24 +29,40 @@ struct SignInView: View {
                     
                     if !viewModel.isLoginMode {
                         Button {
-                            
+                            viewModel.handleImagePickerAction()
                         } label: {
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 64))
-                                .padding()
+                            VStack {
+                                if let image = self.viewModel.image {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .frame(width: 128, height: 128)
+                                        .scaledToFill()
+                                        .cornerRadius(64)
+                                } else {
+                                    Image(systemName: "person.fill")
+                                        .font(.system(size: 64))
+                                        .padding()
+                                        .foregroundColor(.black)
+                                }
+                            } //: VStack
+                            .overlay(RoundedRectangle(cornerRadius: 64)
+                                .stroke(Color.black, lineWidth: 3)
+                            )
+
                         } //: Button
                     }
                     Group {
                         TextField("Email", text: $viewModel.email)
                             .keyboardType(.emailAddress)
                             .textInputAutocapitalization(.never)
+                            .disableAutocorrection(true)
                         SecureField("Password", text: $viewModel.password)
                     } //: Group
                     .padding(12)
                     .background(.white)
                     
                     Button {
-                        viewModel.handleAction()
+                        viewModel.handleSignInAction()
                     } label: {
                         HStack {
                             Spacer()
@@ -71,6 +83,9 @@ struct SignInView: View {
                 .ignoresSafeArea())
         } //: NavigationView
         .navigationViewStyle(.stack)
+        .fullScreenCover(isPresented: $viewModel.shouldShowImagePicker) {
+            ImagePicker(image: $viewModel.image)
+        }
     }
     
     
@@ -85,40 +100,95 @@ struct ContentView_Previews: PreviewProvider {
 
 extension SignInView {
     @MainActor class ViewModel: ObservableObject {
-        @Published public var error: FirebaseAuthenticator.SignInError?
+        /// Used to propogate signIn Errors
+        @Published public var error: AppError?
+        
+        /// A Flag to keep track of the segmented control
         @Published public var isLoginMode = false
+        
+        /// The email of the user entered in the email textfield
         @Published public var email = ""
+        
+        /// The password of the user entered into the password textfield
         @Published public var password = ""
-        @Published public var authenticator = FirebaseAuthenticator()
+        
+        /// The Object used to authenticate users
+        @Published public var authenticator: AuthProtocol
+        
+        
+        /// A flag to dictate when we show the ImagePickerController
+        @Published public var shouldShowImagePicker: Bool = false
+        
+        /// The image of the User
+        @Published public var image: UIImage?
+        
+        
+        init(authenticator: AuthProtocol = FirebaseManager()) {
+            self.authenticator = authenticator
+        }
         
         /// Handles the Login Action Button
-        public func handleAction() {
+        public func handleSignInAction() {
             if isLoginMode {
-                print("Login to firebase with existing credentials")
+                singIn()
             } else {
-                print("Register a new account inside of firebase Auth and then store image in Storage somehow")
                 signUp()
             }
         }
         
+        /// #Sign up
+        /// A function used to register users into to Rapttr chat database
         public func signUp() {
             authenticator.signUp(with: email, password: password) { result in
                 switch result {
                 case .failure(let err):
-                    self.error = err
-                case .success(()):
-                    print("Success")
+                    self.error = err as? AppError
+                case .success(let user):
+                    print("Sign up success for \(user.uid)")
+                    self.persistImageToStorage()
                 }
             }
         }
         
+        /// #Sign in
+        /// A function used to log users into to Rapttr chat app
+        /// parameter: email
         public func singIn() {
             authenticator.login(with: email, password: password) { result in
                 switch result {
                 case .failure(let err):
-                    self.error = err
-                case .success(()):
-                    print("Success")
+                    self.error = err as? AppError
+                case .success(let user):
+                    print("Sign In success for \(user.uid)")
+                }
+            }
+        }
+        
+        public func handleImagePickerAction() {
+            shouldShowImagePicker.toggle()
+        }
+        
+        public func persistImageToStorage() {
+            guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
+                return
+            }
+            let ref = FirebaseManager.shared.storage.reference(withPath: uid)
+            guard let imageData = self.image?.jpegData(compressionQuality: 0.5) else {
+                return
+            }
+            ref.putData(imageData, metadata: nil) { metadata, error in
+                if let err = error {
+
+                    return
+                }
+                
+                ref.downloadURL { url, err in
+                    if let err = error {
+                        
+                        return
+                    }
+                    
+                    print("Successfully uploaded Image")
                 }
             }
         }
