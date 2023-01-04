@@ -19,9 +19,12 @@
 		9EBD7F8529632602004EEEE8 /* StorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F8429632602004EEEE8 /* StorageProtocol.swift */; };
 		9EBD7F8929634081004EEEE8 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBD7F8829634081004EEEE8 /* AppError.swift */; };
 		9ECCE0512955A8E800D26304 /* RapptrChatAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */; };
-		9ECCE0532955A8E800D26304 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0522955A8E800D26304 /* SignInView.swift */; };
+		9ECCE0532955A8E800D26304 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ECCE0522955A8E800D26304 /* AuthenticationView.swift */; };
 		9ECCE0552955A8E900D26304 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9ECCE0542955A8E900D26304 /* Assets.xcassets */; };
 		9ECCE0582955A8E900D26304 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9ECCE0572955A8E900D26304 /* Preview Assets.xcassets */; };
+		9EFE2CA329648F53002E6306 /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFE2CA229648F53002E6306 /* AuthenticationViewModel.swift */; };
+		9EFE2CA529649218002E6306 /* DatabaseProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFE2CA429649218002E6306 /* DatabaseProtocol.swift */; };
+		9EFE2CAA29657715002E6306 /* MainMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFE2CA929657715002E6306 /* MainMessagesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,9 +38,12 @@
 		9EBD7F8829634081004EEEE8 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		9ECCE04D2955A8E800D26304 /* RapptrChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RapptrChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RapptrChatAppApp.swift; sourceTree = "<group>"; };
-		9ECCE0522955A8E800D26304 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		9ECCE0522955A8E800D26304 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
 		9ECCE0542955A8E900D26304 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9ECCE0572955A8E900D26304 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		9EFE2CA229648F53002E6306 /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
+		9EFE2CA429649218002E6306 /* DatabaseProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseProtocol.swift; sourceTree = "<group>"; };
+		9EFE2CA929657715002E6306 /* MainMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMessagesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,9 +63,7 @@
 		9EBD7F772961C2E7004EEEE8 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
-				9ECCE0522955A8E800D26304 /* SignInView.swift */,
-				9EBD7F782961C2F9004EEEE8 /* FirebaseManager.swift */,
-				9EBD7F7D2961F34B004EEEE8 /* AuthenticatedUser.swift */,
+				9EFE2CA229648F53002E6306 /* AuthenticationViewModel.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -76,8 +80,10 @@
 		9EBD7F8629633839004EEEE8 /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				9EBD7F7D2961F34B004EEEE8 /* AuthenticatedUser.swift */,
 				9EBD7F7F2961F401004EEEE8 /* AuthProtocol.swift */,
 				9EBD7F8429632602004EEEE8 /* StorageProtocol.swift */,
+				9EFE2CA429649218002E6306 /* DatabaseProtocol.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -88,6 +94,14 @@
 				9EBD7F8829634081004EEEE8 /* AppError.swift */,
 			);
 			path = Errors;
+			sourceTree = "<group>";
+		};
+		9EBD7F8A29634185004EEEE8 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				9EBD7F782961C2F9004EEEE8 /* FirebaseManager.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		9ECCE0442955A8E800D26304 = {
@@ -109,6 +123,8 @@
 		9ECCE04F2955A8E800D26304 /* RapptrChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				9EFE2CA8296576F7002E6306 /* Views */,
+				9EBD7F8A29634185004EEEE8 /* Utilities */,
 				9EBD7F8729634066004EEEE8 /* Errors */,
 				9EBD7F8629633839004EEEE8 /* Protocols */,
 				9EBD7F7A2961C35C004EEEE8 /* Helpers */,
@@ -127,6 +143,15 @@
 				9ECCE0572955A8E900D26304 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		9EFE2CA8296576F7002E6306 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9ECCE0522955A8E800D26304 /* AuthenticationView.swift */,
+				9EFE2CA929657715002E6306 /* MainMessagesView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,12 +233,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9ECCE0532955A8E800D26304 /* SignInView.swift in Sources */,
+				9ECCE0532955A8E800D26304 /* AuthenticationView.swift in Sources */,
+				9EFE2CAA29657715002E6306 /* MainMessagesView.swift in Sources */,
 				9EBD7F802961F401004EEEE8 /* AuthProtocol.swift in Sources */,
 				9EBD7F7E2961F34B004EEEE8 /* AuthenticatedUser.swift in Sources */,
 				9EBD7F822961F50B004EEEE8 /* ImagePicker.swift in Sources */,
 				9EBD7F8929634081004EEEE8 /* AppError.swift in Sources */,
+				9EFE2CA529649218002E6306 /* DatabaseProtocol.swift in Sources */,
 				9EBD7F7C2961C36C004EEEE8 /* View+Error.swift in Sources */,
+				9EFE2CA329648F53002E6306 /* AuthenticationViewModel.swift in Sources */,
 				9ECCE0512955A8E800D26304 /* RapptrChatAppApp.swift in Sources */,
 				9EBD7F792961C2F9004EEEE8 /* FirebaseManager.swift in Sources */,
 				9EBD7F8529632602004EEEE8 /* StorageProtocol.swift in Sources */,
@@ -353,6 +381,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -382,6 +411,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

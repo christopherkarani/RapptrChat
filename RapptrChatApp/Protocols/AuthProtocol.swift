@@ -19,4 +19,7 @@ public protocol AuthProtocol {
     /// - parameter password: The users 6 character password
     /// - parameter completion: Function called upon completion of this network activity
     func signUp(with email: String, password: String, completion: @escaping ((Result<AuthenticatedUser, AppError>)) -> ())
+    
+    /// The Current user of the app
+    var currentUser: AuthenticatedUser? { get }
 }

@@ -8,9 +8,11 @@
 import SwiftUI
 import Firebase
 
-struct SignInView: View {
+struct AuthenticationView: View {
     
     @StateObject private var viewModel = ViewModel()
+    
+    
     
     var body: some View {
         NavigationView {
@@ -93,104 +95,8 @@ struct SignInView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        SignInView()
+        AuthenticationView()
     }
 }
 
 
-extension SignInView {
-    @MainActor class ViewModel: ObservableObject {
-        /// Used to propogate signIn Errors
-        @Published public var error: AppError?
-        
-        /// A Flag to keep track of the segmented control
-        @Published public var isLoginMode = false
-        
-        /// The email of the user entered in the email textfield
-        @Published public var email = ""
-        
-        /// The password of the user entered into the password textfield
-        @Published public var password = ""
-        
-        /// The Object used to authenticate users
-        @Published public var authenticator: AuthProtocol
-        
-        
-        /// A flag to dictate when we show the ImagePickerController
-        @Published public var shouldShowImagePicker: Bool = false
-        
-        /// The image of the User
-        @Published public var image: UIImage?
-        
-        
-        init(authenticator: AuthProtocol = FirebaseManager()) {
-            self.authenticator = authenticator
-        }
-        
-        /// Handles the Login Action Button
-        public func handleSignInAction() {
-            if isLoginMode {
-                singIn()
-            } else {
-                signUp()
-            }
-        }
-        
-        /// #Sign up
-        /// A function used to register users into to Rapttr chat database
-        public func signUp() {
-            authenticator.signUp(with: email, password: password) { result in
-                switch result {
-                case .failure(let err):
-                    self.error = err as? AppError
-                case .success(let user):
-                    print("Sign up success for \(user.uid)")
-                    self.persistImageToStorage()
-                }
-            }
-        }
-        
-        /// #Sign in
-        /// A function used to log users into to Rapttr chat app
-        /// parameter: email
-        public func singIn() {
-            authenticator.login(with: email, password: password) { result in
-                switch result {
-                case .failure(let err):
-                    self.error = err as? AppError
-                case .success(let user):
-                    print("Sign In success for \(user.uid)")
-                }
-            }
-        }
-        
-        public func handleImagePickerAction() {
-            shouldShowImagePicker.toggle()
-        }
-        
-        public func persistImageToStorage() {
-            guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {
-                return
-            }
-            let ref = FirebaseManager.shared.storage.reference(withPath: uid)
-            guard let imageData = self.image?.jpegData(compressionQuality: 0.5) else {
-                return
-            }
-            ref.putData(imageData, metadata: nil) { metadata, error in
-                if let err = error {
-
-                    return
-                }
-                
-                ref.downloadURL { url, err in
-                    if let err = error {
-                        
-                        return
-                    }
-                    
-                    print("Successfully uploaded Image")
-                }
-            }
-        }
-    }
-}

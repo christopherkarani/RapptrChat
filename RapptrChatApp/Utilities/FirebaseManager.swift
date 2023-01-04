@@ -19,6 +19,10 @@ public class FirebaseManager: NSObject {
         self.firestore = Firestore.firestore()
         super.init()
     }
+    
+    public var currentUser : AuthenticatedUser? {
+        return auth.currentUser
+    }
 }
 
 
@@ -58,8 +62,9 @@ extension FirebaseManager: AuthProtocol {
 
 
 extension FirebaseManager: StorageProtocol {
-    public func persist(image data: Data, toStorage path: String, for user: AuthenticatedUser, completion: @escaping (Result<URL, AppError>) -> ()) {
+    public func persist(image data: Data, for user: AuthenticatedUser, completion: @escaping (Result<URL, AppError>) -> ()) {
         let ref = storage.reference(withPath: user.uid)
+        
         ref.putData(data, metadata: nil) { metadata, error in
             if let err = error {
                 completion(.failure(.failedImageUpload(description: err.localizedDescription)))
@@ -73,10 +78,26 @@ extension FirebaseManager: StorageProtocol {
                 guard let url = url else { return }
                 completion(.success(url))
             }
+            
         }
     }
-    
-    
+}
+
+extension FirebaseManager: DatabaseProtocol {
+    func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser, completion: @escaping (Result<(), AppError>) -> () ) {
+        let userData = ["email": user.email ?? "", "uid": user.uid, "profileImageUrl": imageProfileurl.absoluteString]
+        firestore
+            .collection("users")
+            .document(user.uid)
+            .setData(userData) { error in
+                if let error = error {
+                    completion(.failure(.failedToStoreUserInfo(description: error.localizedDescription)))
+                    return
+                }
+                print("Success bitttttch")
+                completion(.success(()))
+            }
+    }
 }
 
 

@@ -12,6 +12,7 @@ public enum AppError: LocalizedError {
     case failedRegistration(description: String)
     case failedImageUpload(description: String)
     case failedToRetrieveDownloadUrl(description: String)
+    case failedToStoreUserInfo(description: String)
     case error(description: String)
     
     init?(error: AppError?) {
@@ -31,6 +32,8 @@ public enum AppError: LocalizedError {
             return "Failed to retrieve download Url: \(description)"
         case .error(description: let description):
             return "Error: \(description)"
+        case .failedToStoreUserInfo(description: let description):
+            return "Failed to store user Info in Firestore: \(description)"
         }
     }
 }
