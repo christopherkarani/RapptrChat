@@ -28,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9E8598C82968100A00CF5F16 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9EBD7F75295DAA83004EEEE8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9EBD7F782961C2F9004EEEE8 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		9EBD7F7B2961C36C004EEEE8 /* View+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Error.swift"; sourceTree = "<group>"; };
@@ -60,12 +61,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9EBD7F772961C2E7004EEEE8 /* Authentication */ = {
+		9EBD7F772961C2E7004EEEE8 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
 				9EFE2CA229648F53002E6306 /* AuthenticationViewModel.swift */,
 			);
-			path = Authentication;
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		9EBD7F7A2961C35C004EEEE8 /* Helpers */ = {
@@ -123,12 +124,13 @@
 		9ECCE04F2955A8E800D26304 /* RapptrChatApp */ = {
 			isa = PBXGroup;
 			children = (
+				9E8598C82968100A00CF5F16 /* Info.plist */,
 				9EFE2CA8296576F7002E6306 /* Views */,
 				9EBD7F8A29634185004EEEE8 /* Utilities */,
 				9EBD7F8729634066004EEEE8 /* Errors */,
 				9EBD7F8629633839004EEEE8 /* Protocols */,
 				9EBD7F7A2961C35C004EEEE8 /* Helpers */,
-				9EBD7F772961C2E7004EEEE8 /* Authentication */,
+				9EBD7F772961C2E7004EEEE8 /* ViewModels */,
 				9ECCE0502955A8E800D26304 /* RapptrChatAppApp.swift */,
 				9EBD7F75295DAA83004EEEE8 /* GoogleService-Info.plist */,
 				9ECCE0542955A8E900D26304 /* Assets.xcassets */,
@@ -376,7 +378,7 @@
 				DEVELOPMENT_TEAM = BTSZ26LN83;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = RapptrChatApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -406,7 +408,7 @@
 				DEVELOPMENT_TEAM = BTSZ26LN83;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = RapptrChatApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -453,8 +455,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.10.0;
+				branch = master;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

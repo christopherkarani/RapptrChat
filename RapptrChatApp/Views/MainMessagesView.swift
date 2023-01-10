@@ -6,15 +6,31 @@
 //
 
 import SwiftUI
+import Combine
 
 
+struct ChatUser {
+    let uid, email, profileImageUrl: String
+}
+
+extension ChatUser {
+    init(data: [String: Any]) {
+        uid = data["uid"] as? String ?? ""
+        email = data["email"] as? String ?? ""
+        profileImageUrl = data["profileImageUrl"] as? String ?? ""
+    }
+    
+    var username: String {
+        return email.replacingOccurrences(of: "@gmail.com", with: "")
+    }
+}
 
 
 struct MainMessagesView: View {
-    @State var shouldShowLogoutOptions: Bool = false
+    @ObservedObject private var viewModel = ViewModel()
     
-    
-    
+
+
     private var newMessageButton: some View {
         Button {
             
@@ -34,10 +50,19 @@ struct MainMessagesView: View {
     
     private var customNavigationBar: some View {
         HStack(spacing: 16) {
-            Image(systemName: "person.fill")
-                .font(.system(size: 34, weight: .heavy))
+            AsyncImage(url: URL(string: viewModel.chatUser?.profileImageUrl ?? "")) { image in
+                image.resizable()
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: 50, height: 50)
+            .cornerRadius(50)
+            .overlay(RoundedRectangle(cornerRadius: 32)
+                .stroke(Color(.label), lineWidth: 1)
+            )
+            .shadow(radius: 5)
             VStack(alignment: .leading, spacing: 4) {
-                Text("Username")
+                Text(viewModel.chatUser?.username ?? "")
                     .font(.system(size: 24, weight: .bold))
                 HStack {
                     Circle()
@@ -50,7 +75,7 @@ struct MainMessagesView: View {
             }
             Spacer()
             Button {
-                shouldShowLogoutOptions.toggle()
+                viewModel.toggleSettingsAlert()
             } label: {
                 Image(systemName: "gear")
                     .font(.system(size: 24, weight: .bold))
@@ -58,14 +83,17 @@ struct MainMessagesView: View {
             
         }
         .padding()
-        .confirmationDialog("Sign Out", isPresented: $shouldShowLogoutOptions) {
+        .confirmationDialog("Sign Out", isPresented: $viewModel.shouldShowLogoutOptions) {
             Button("Sign Out", role: .destructive) {
-                print("handle sign out")
+                viewModel.handleSignOut()
             }
             
             Button("Cancel", role: .cancel) {
-                
+        
             }
+        }
+        .fullScreenCover(isPresented: $viewModel.isUserLoggedOut) {
+            AuthenticationView()
         }
     }
     
@@ -111,13 +139,81 @@ struct MainMessagesView: View {
                 newMessageButton,
                 alignment: .bottom)
             .toolbar(.hidden, for: .navigationBar)
+            .onAppear {
+                Task {
+                    //viewModel.checkLoginStatus()
+                    guard let data = await viewModel.fetchCurrentUserInfo() else {
+                        print("unable to obtain data")
+                        return
+                    }
+                    print("Current User Data \(data)")
+                }
+            }
         } //: Navigation View
+
     }
 }
 
 extension MainMessagesView {
-    class ViewModel: ObservableObject {
+    @MainActor class ViewModel: ObservableObject {
+        
+        var cancellable: AnyCancellable?
+        
+        var rubish = Set<AnyCancellable>()
+        var error: AppError?
+        var database: DatabaseProtocol
+        
+        // needed for sign out
+        var authenticator: AuthProtocol
+        
+        @Published public var chatUser: ChatUser?
+        
+        
+        init(database: DatabaseProtocol = FirebaseManager.shared,
+             authenticator: AuthProtocol = FirebaseManager.shared
+        ) {
+            self.database = database
+            self.authenticator = authenticator
+
+            FirebaseManager.shared.isUserLoggedIn
+                .sink { [weak self] isUserLoggedIn in
+                    self?.isUserLoggedOut = !isUserLoggedIn
+                }.store(in: &rubish)
+        }
         @Published var shouldShowLogoutOptions: Bool = false
+        
+        @Published var isUserLoggedOut: Bool = false
+        
+        
+      
+            
+        
+
+        
+        public func handleSignOut() {
+            isUserLoggedOut = true
+            do {
+                try authenticator.signOut()
+            } catch {
+                self.error = error as? AppError
+            }
+        }
+        
+        public func toggleSettingsAlert() {
+            shouldShowLogoutOptions.toggle()
+        }
+        
+        public func fetchCurrentUserInfo() async -> [String: Any]? {
+            do {
+                let userData = try await database.fetchCurrentUserInfo()
+                self.chatUser = ChatUser(data: userData)
+                return userData
+            } catch {
+                self.error = error as? AppError
+            }
+            
+            return nil
+        }
     }
 }
 
