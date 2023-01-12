@@ -12,9 +12,6 @@ struct AuthenticationView: View {
     
     @StateObject private var viewModel = ViewModel()
     
-    
-    
-
     var body: some View {
         NavigationView {
             ScrollView {
@@ -49,7 +46,6 @@ struct AuthenticationView: View {
                             .overlay(RoundedRectangle(cornerRadius: 64)
                                 .stroke(Color.black, lineWidth: 3)
                             )
-
                         } //: Button
                     }
                     Group {

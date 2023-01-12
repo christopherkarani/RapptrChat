@@ -13,5 +13,7 @@ protocol DatabaseProtocol {
     
     func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser) async throws
     
-    func fetchCurrentUserInfo() async throws -> [String: Any] 
+    func fetchCurrentUserInfo() async throws -> [String: Any]
+    
+    func fetchAllUsers() async throws -> [ChatUser]
 }

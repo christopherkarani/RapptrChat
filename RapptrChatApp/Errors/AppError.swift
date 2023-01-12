@@ -18,6 +18,7 @@ public enum AppError: LocalizedError {
     case unableToRetrieveCurrentUser
     case signOutError(description: String)
     case noUserImagePicked
+    case errorFetchingAllUsers(description: String)
     case error(description: String)
     
     init?(error: AppError?) {
@@ -47,9 +48,10 @@ public enum AppError: LocalizedError {
             return "Collection Data Error: \(description)"
         case .signOutError(description: let description):
             return "Error signing user out: \(description)"
-            
         case .noUserImagePicked:
             return "User has not picked a profile Image, Tap on the Person.Fill image to present Image Picker"
+        case .errorFetchingAllUsers(description: let description):
+            return "There was an error fetching all the users: \(description)"
         }
     }
 }

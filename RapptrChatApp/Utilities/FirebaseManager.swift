@@ -142,6 +142,14 @@ extension FirebaseManager: StorageProtocol {
 }
 
 extension FirebaseManager: DatabaseProtocol {
+    func fetchAllUsers() async throws -> [ChatUser] {
+        let documentSnapShot = try await FirebaseManager.shared.firestore.collection("users")
+            .getDocuments()
+        return documentSnapShot.documents.map {
+            ChatUser(data: $0.data())
+        }
+    }
+    
     func fetchCurrentUserInfo() async throws -> [String : Any] {
         guard let user = currentUser else {
             throw AppError.unableToRetrieveCurrentUser
