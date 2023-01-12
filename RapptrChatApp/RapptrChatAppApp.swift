@@ -15,7 +15,7 @@ struct RapptrChatAppApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            AuthenticationView()
+            MainMessagesView()
         }
     }
 }

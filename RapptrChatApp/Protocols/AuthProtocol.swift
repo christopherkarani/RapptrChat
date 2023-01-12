@@ -22,4 +22,19 @@ public protocol AuthProtocol {
     
     /// The Current user of the app
     var currentUser: AuthenticatedUser? { get }
+    
+    
+    /// Async function to Authenticate users and register them into database
+    /// - parameter email: users unique email used to register them into the database
+    /// - parameter password: The users 6 character password
+    @discardableResult
+    func login(with email: String, password: String) async throws -> AuthenticatedUser
+    
+    /// Async function to Authenticate and log users into the app
+    /// - parameter email: users unique email used to log them into the app
+    /// - parameter password: The users 6 character password
+    func signUp(with email: String, password: String) async throws -> AuthenticatedUser
+    
+    func signOut() throws
+    
 }

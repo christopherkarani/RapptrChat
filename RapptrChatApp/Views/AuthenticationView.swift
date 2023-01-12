@@ -12,8 +12,6 @@ struct AuthenticationView: View {
     
     @StateObject private var viewModel = ViewModel()
     
-    
-    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -27,8 +25,6 @@ struct AuthenticationView: View {
                         Text("Login")
                     } //: Picker
                     .pickerStyle(SegmentedPickerStyle())
-                    
-                    
                     if !viewModel.isLoginMode {
                         Button {
                             viewModel.handleImagePickerAction()
@@ -50,7 +46,6 @@ struct AuthenticationView: View {
                             .overlay(RoundedRectangle(cornerRadius: 64)
                                 .stroke(Color.black, lineWidth: 3)
                             )
-
                         } //: Button
                     }
                     Group {
@@ -64,7 +59,10 @@ struct AuthenticationView: View {
                     .background(.white)
                     
                     Button {
-                        viewModel.handleSignInAction()
+                        Task {
+                            await viewModel.handleSignInAction()
+                        }
+                        
                     } label: {
                         HStack {
                             Spacer()

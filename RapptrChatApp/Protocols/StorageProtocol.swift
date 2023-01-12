@@ -14,5 +14,7 @@ public protocol StorageProtocol {
     /// - parameter path: The path used for storage location
     /// - parameter user: The User that this image belongs to
     func persist(image data: Data, for user: AuthenticatedUser, completion: @escaping (Result<URL, AppError>) -> ())
+    
+    func persist(image data: Data, for user: AuthenticatedUser) async throws -> URL
 }
 

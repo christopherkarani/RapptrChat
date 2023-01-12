@@ -6,118 +6,86 @@
 //
 
 import SwiftUI
-
-
+import Combine
 
 
 struct MainMessagesView: View {
-    @State var shouldShowLogoutOptions: Bool = false
-    
-    
-    
-    private var newMessageButton: some View {
-        Button {
-            
-        } label: {
-            Spacer()
-            Text("+ New Message")
-                .font(.system(size: 16, weight: .bold))
-            Spacer()
-        }
-        .foregroundColor(.white)
-        .padding(.vertical)
-        .background(Color.blue)
-        .cornerRadius(32)
-        .padding(.horizontal)
-        .shadow(radius: 15)
-    }
-    
-    private var customNavigationBar: some View {
-        HStack(spacing: 16) {
-            Image(systemName: "person.fill")
-                .font(.system(size: 34, weight: .heavy))
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Username")
-                    .font(.system(size: 24, weight: .bold))
-                HStack {
-                    Circle()
-                        .foregroundColor(.green)
-                        .frame(width: 14, height: 14)
-                    Text("Online")
-                        .font(.system(size: 12))
-                        .foregroundColor(Color(.lightGray))
-                }
-            }
-            Spacer()
-            Button {
-                shouldShowLogoutOptions.toggle()
-            } label: {
-                Image(systemName: "gear")
-                    .font(.system(size: 24, weight: .bold))
-            }
-            
-        }
-        .padding()
-        .confirmationDialog("Sign Out", isPresented: $shouldShowLogoutOptions) {
-            Button("Sign Out", role: .destructive) {
-                print("handle sign out")
-            }
-            
-            Button("Cancel", role: .cancel) {
-                
-            }
-        }
-    }
-    
-    private var messagesView: some View {
-        ScrollView {
-            ForEach(0..<10, id: \.self) { num in
-                VStack {
-                    HStack(spacing: 16) {
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 32))
-                            .padding(8)
-                            .overlay(RoundedRectangle(cornerRadius: 32)
-                                .stroke(Color(.label), lineWidth: 1)
-                            )
-                        VStack(alignment: .leading) {
-                            Text("Username")
-                                .font(.system(size: 16, weight: .bold))
-                            Text("Message sent to user")
-                                .font(.system(size: 14))
-                                .foregroundColor(Color(.lightGray))
-                        }
-                        Spacer()
-                        Text("22d")
-                            .font(.system(size: 14, weight: .semibold))
-                    }//HStack
-                    Divider()
-                        .padding(.vertical, 8)
-                }//: VStack
-                .padding(.horizontal)
-            }//: ForEach
-            .padding(.bottom, 50)
-        }//: ScrollView
-    }
-    
+    @ObservedObject private var viewModel = ViewModel()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
-                customNavigationBar
-                messagesView
+                CustomNavigationBar(viewModel: viewModel)
+                MessagesView()
             }//: Vstack
+            .navigationDestination(isPresented: $viewModel.shouldNavigateToChatView) {
+            }
             .overlay(
-                newMessageButton,
+                NewMessagesButton(viewModel: viewModel),
                 alignment: .bottom)
             .toolbar(.hidden, for: .navigationBar)
+            .onAppear {
+                Task {
+                    guard (await viewModel.fetchCurrentUserInfo()) != nil else { return }
+                }
+            }
         } //: Navigation View
     }
 }
 
 extension MainMessagesView {
-    class ViewModel: ObservableObject {
-        @Published var shouldShowLogoutOptions: Bool = false
+    @MainActor public class ViewModel: ObservableObject {
+        
+        
+        private var rubish = Set<AnyCancellable>()
+        private var database: DatabaseProtocol
+        private var authenticator: AuthProtocol
+        var error: AppError?
+
+        
+        @Published public var chatUser: ChatUser?
+        @Published public var shouldShowMessageScreen: Bool = false
+        @Published public var selectedChatUser: ChatUser?
+        @Published public var shouldNavigateToChatView: Bool = false
+        @Published public var shouldShowLogoutOptions: Bool = false
+        @Published public var isUserLoggedOut: Bool = false
+        
+        public init(database: DatabaseProtocol = FirebaseManager.shared,
+             authenticator: AuthProtocol = FirebaseManager.shared
+        ) {
+            self.database = database
+            self.authenticator = authenticator
+            
+            FirebaseManager.shared.isUserLoggedIn
+                .sink { [weak self] isUserLoggedIn in
+                    self?.isUserLoggedOut = !isUserLoggedIn
+                }.store(in: &rubish)
+        }
+        
+        public func handleSignOut() {
+            isUserLoggedOut = true
+            do {
+                try authenticator.signOut()
+            } catch {
+                self.error = error as? AppError
+            }
+        }
+        
+        public func toggleSettingsAlert() {
+            shouldShowLogoutOptions.toggle()
+        }
+        
+        public func fetchCurrentUserInfo() async -> [String: Any]? {
+            do {
+                let userData = try await database.fetchCurrentUserInfo()
+                self.chatUser = ChatUser(data: userData)
+                return userData
+            } catch {
+                self.error = error as? AppError
+            }
+            
+            return nil
+        }
     }
 }
 
