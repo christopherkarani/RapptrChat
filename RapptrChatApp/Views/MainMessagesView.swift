@@ -43,7 +43,7 @@ extension MainMessagesView {
         var error: AppError?
 
         
-        @Published public var chatUser: ChatUser?
+        @Published public var currentChatUser: ChatUser?
         @Published public var shouldShowMessageScreen: Bool = false
         @Published public var selectedChatUser: ChatUser?
         @Published public var shouldNavigateToChatView: Bool = false
@@ -78,7 +78,7 @@ extension MainMessagesView {
         public func fetchCurrentUserInfo() async -> [String: Any]? {
             do {
                 let userData = try await database.fetchCurrentUserInfo()
-                self.chatUser = ChatUser(data: userData)
+                self.currentChatUser = ChatUser(data: userData)
                 return userData
             } catch {
                 self.error = error as? AppError

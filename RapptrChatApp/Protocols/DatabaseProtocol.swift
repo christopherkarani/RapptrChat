@@ -9,6 +9,7 @@ import Foundation
 
 
 protocol DatabaseProtocol {
+    
     func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser, completion: @escaping (Result<(), AppError>) -> ())
     
     func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser) async throws
