@@ -11,7 +11,7 @@ struct CustomNavigationBar: View {
     @ObservedObject var viewModel: MainMessagesView.ViewModel
     var body: some View {
         HStack(spacing: 16) {
-            AsyncImage(url: URL(string: viewModel.chatUser?.profileImageUrl ?? "")) { image in
+            AsyncImage(url: URL(string: viewModel.currentChatUser?.profileImageUrl ?? "")) { image in
                 image.resizable()
             } placeholder: {
                 ProgressView()
@@ -23,7 +23,7 @@ struct CustomNavigationBar: View {
             )
             .shadow(radius: 5)
             VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.chatUser?.username ?? "")
+                Text(viewModel.currentChatUser?.username ?? "")
                     .font(.system(size: 24, weight: .bold))
                 HStack {
                     Circle()
