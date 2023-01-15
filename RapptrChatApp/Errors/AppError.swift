@@ -8,6 +8,7 @@
 import Foundation
 
 public enum AppError: LocalizedError {
+    case errorFormingUserDatat(type: String)
     case failedLogin(description: String)
     case failedRegistration(description: String)
     case failedImageUpload(description: String)
@@ -52,6 +53,8 @@ public enum AppError: LocalizedError {
             return "User has not picked a profile Image, Tap on the Person.Fill image to present Image Picker"
         case .errorFetchingAllUsers(description: let description):
             return "There was an error fetching all the users: \(description)"
+        case .errorFormingUserDatat(let type):
+            return "There was error forming User data: \(type)"
         }
     }
 }
