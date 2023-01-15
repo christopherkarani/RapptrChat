@@ -163,12 +163,7 @@ extension FirebaseManager: DatabaseProtocol {
         }
     }
     
-    struct UserData {
-        let email, uid, profileIamageUrl: String
-        public func data() -> [String: Any] {
-            ["email": email, "uid": uid, "profileImageUrl": profileIamageUrl]
-        }
-    }
+    
     func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser) async throws {
         guard let email = user.email else {
             throw AppError.errorFormingUserDatat(type: "email")
