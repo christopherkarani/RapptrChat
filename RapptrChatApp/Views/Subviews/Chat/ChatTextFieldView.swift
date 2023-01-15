@@ -20,6 +20,9 @@ struct ChatTextFieldView: View {
 //                .multilineTextAlignment(.leading)
 //                .frame(width: 220, height: 45)
             Button {
+                Task{
+                    await viewModel.handleSend()
+                }
                 
             } label: {
                 Text("Send")
@@ -37,6 +40,6 @@ struct ChatTextFieldView: View {
 
 struct ChatTextFIeldView_Previews: PreviewProvider {
     static var previews: some View {
-        ChatTextFieldView(viewModel: ChatMessagesView.ViewModel.init())
+        ChatTextFieldView(viewModel: ChatMessagesView.ViewModel.init(chatUser: makeMockChatUser()))
     }
 }

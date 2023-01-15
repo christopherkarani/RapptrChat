@@ -19,6 +19,9 @@ struct MainMessagesView: View {
                 MessagesView()
             }//: Vstack
             .navigationDestination(isPresented: $viewModel.shouldNavigateToChatView) {
+                if let selectedUser = viewModel.selectedChatUser {
+                    ChatMessagesView(chatUser: selectedUser)
+                }
             }
             .overlay(
                 NewMessagesButton(viewModel: viewModel),

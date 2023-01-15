@@ -44,9 +44,6 @@ public class FirebaseManager: NSObject, ObservableObject {
 
 
 extension FirebaseManager: AuthProtocol {
-    
-
-    
     public func signOut() throws {
         do {
             try auth.signOut()
@@ -166,13 +163,22 @@ extension FirebaseManager: DatabaseProtocol {
         }
     }
     
+    struct UserData {
+        let email, uid, profileIamageUrl: String
+        public func data() -> [String: Any] {
+            ["email": email, "uid": uid, "profileImageUrl": profileIamageUrl]
+        }
+    }
     func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser) async throws {
-        let userData = ["email": user.email ?? "", "uid": user.uid, "profileImageUrl": imageProfileurl.absoluteString]
+        guard let email = user.email else {
+            throw AppError.errorFormingUserDatat(type: "email")
+        }
+        let userData = UserData(email: email, uid: user.uid, profileIamageUrl: imageProfileurl.absoluteString)
         do {
             try await firestore
                 .collection("users")
                 .document(user.uid)
-                .setData(userData)
+                .setData(userData.data())
         } catch {
             throw AppError.failedToStoreUserInfo(description: error.localizedDescription)
         }
@@ -188,9 +194,25 @@ extension FirebaseManager: DatabaseProtocol {
                     completion(.failure(.failedToStoreUserInfo(description: error.localizedDescription)))
                     return
                 }
-                print("Success bitttttch")
                 completion(.success(()))
             }
+    }
+    
+    func send(chatMessage: String, toID: String) async throws {
+        guard let fromID = currentUser?.uid else { throw AppError.unableToRetrieveCurrentUser }
+        let message = ChatMessageModel(fromID: fromID, toID: toID, text: chatMessage)
+        let document = firestore
+            .collection(FirebaseConstants.messages)
+            .document(fromID)
+            .collection(toID)
+            .document()
+        try await document.setData(message.data())
+        let reciepientDocument = firestore
+            .collection(FirebaseConstants.messages)
+            .document(toID)
+            .collection(fromID)
+            .document()
+        try await reciepientDocument.setData(message.data())
     }
 }
 
