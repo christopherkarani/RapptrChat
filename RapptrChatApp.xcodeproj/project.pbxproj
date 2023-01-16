@@ -16,6 +16,7 @@
 		9EBC0E362970743700426373 /* ChatTextFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBC0E352970743700426373 /* ChatTextFieldView.swift */; };
 		9EBC0E3C2974384E00426373 /* ChatMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBC0E3B2974384E00426373 /* ChatMessageModel.swift */; };
 		9EBC0E3E29743E9200426373 /* FirebaseConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBC0E3D29743E9200426373 /* FirebaseConstants.swift */; };
+		9EBC0E402974639C00426373 /* UserDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBC0E3F2974639C00426373 /* UserDataModel.swift */; };
 		9EBD7F70295D9681004EEEE8 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9EBD7F6F295D9681004EEEE8 /* FirebaseAuth */; };
 		9EBD7F72295D9681004EEEE8 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 9EBD7F71295D9681004EEEE8 /* FirebaseFirestore */; };
 		9EBD7F74295D9681004EEEE8 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 9EBD7F73295D9681004EEEE8 /* FirebaseStorage */; };
@@ -47,6 +48,7 @@
 		9EBC0E352970743700426373 /* ChatTextFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextFieldView.swift; sourceTree = "<group>"; };
 		9EBC0E3B2974384E00426373 /* ChatMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageModel.swift; sourceTree = "<group>"; };
 		9EBC0E3D29743E9200426373 /* FirebaseConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseConstants.swift; sourceTree = "<group>"; };
+		9EBC0E3F2974639C00426373 /* UserDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataModel.swift; sourceTree = "<group>"; };
 		9EBD7F75295DAA83004EEEE8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9EBD7F782961C2F9004EEEE8 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		9EBD7F7B2961C36C004EEEE8 /* View+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Error.swift"; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 			children = (
 				9EBC0E27296EC11700426373 /* ChatUser.swift */,
 				9EBC0E3B2974384E00426373 /* ChatMessageModel.swift */,
+				9EBC0E3F2974639C00426373 /* UserDataModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -306,6 +309,7 @@
 				9EBD7F792961C2F9004EEEE8 /* FirebaseManager.swift in Sources */,
 				9EBD7F8529632602004EEEE8 /* StorageProtocol.swift in Sources */,
 				9EBC0E3C2974384E00426373 /* ChatMessageModel.swift in Sources */,
+				9EBC0E402974639C00426373 /* UserDataModel.swift in Sources */,
 				9EBC0E3E29743E9200426373 /* FirebaseConstants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -515,8 +519,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

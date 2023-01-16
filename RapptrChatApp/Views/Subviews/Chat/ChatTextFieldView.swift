@@ -15,10 +15,6 @@ struct ChatTextFieldView: View {
                 .font(.system(size: 24))
                 .foregroundColor(Color(.darkGray))
             TextField("description", text: $viewModel.currentChatMessage)
-//            TextEditor(text: $viewModel.currentChatMessage)
-//                .font(.custom("Menlo", size: 14.0))
-//                .multilineTextAlignment(.leading)
-//                .frame(width: 220, height: 45)
             Button {
                 Task{
                     await viewModel.handleSend()

@@ -10,8 +10,6 @@ import FirebaseFirestore
 
 struct ChatMessagesView: View {
     @ObservedObject var viewModel: ViewModel
-    
-    
     var chatUser: ChatUser
     
     init(chatUser: ChatUser) {
@@ -19,16 +17,32 @@ struct ChatMessagesView: View {
         self.viewModel = .init(chatUser: chatUser)
     }
     
-    var messageBubble: some View {
-        HStack {
-            Spacer()
-            HStack {
-                Text("Messages go here")
-                    .foregroundColor(.white)
+    func messageBubble(for message: ChatMessageModel) -> some View {
+        VStack {
+            if viewModel.isCurrentUser(message: message) {
+                HStack {
+                    Spacer()
+                    HStack {
+                        Text(message.text)
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(8)
+                }
+            } else {
+                HStack {
+                    
+                    HStack {
+                        Text(message.text)
+                            .foregroundColor(.black)
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    Spacer()
+                }
             }
-            .padding()
-            .background(Color.blue)
-            .cornerRadius(8)
         }
         .padding(.horizontal)
         .padding(.top, 8)
@@ -37,8 +51,19 @@ struct ChatMessagesView: View {
     var messagesView: some View {
         VStack {
             ScrollView {
-                ForEach(0..<20) { num in
-                    messageBubble
+                ScrollViewReader { proxy in
+                    VStack {
+                        ForEach(viewModel.chatMessages) { message in
+                            messageBubble(for: message)
+                        }
+                        HStack { Spacer() }
+                            .id(ViewModel.emptyScrollToString)
+                    }
+                    .onReceive(viewModel.$count) { _ in
+                        withAnimation(.easeOut(duration: 0.5)) {
+                            proxy.scrollTo(ViewModel.emptyScrollToString, anchor: .bottom)
+                        }
+                    }
                 }
             }
             .background(Color(.init(white: 0.95, alpha: 1)))
@@ -50,13 +75,12 @@ struct ChatMessagesView: View {
             }
         }
     }
-    
 
     var body: some View {
         ZStack {
             messagesView
-            Text(viewModel.errorMessage)
         }
+        .errorAlert(error: $viewModel.appError)
         
         .navigationTitle(chatUser.email)
         .navigationBarTitleDisplayMode(.inline)
@@ -65,44 +89,46 @@ struct ChatMessagesView: View {
 
 
 extension ChatMessagesView {
-    class ViewModel: ObservableObject {
-        let chatUser: ChatUser
+    @MainActor class ViewModel: ObservableObject {
         @Published var errorMessage: String = ""
+        @Published public var currentChatMessage = String()
+        @Published public var chatMessages = [ChatMessageModel]()
+        @Published public var appError: AppError?
+        @Published public var count = 0
+        let chatUser: ChatUser
         private var database: DatabaseProtocol
+        static let emptyScrollToString = "Empty"
         
         init(chatUser: ChatUser, database: DatabaseProtocol = FirebaseManager.shared) {
             self.chatUser = chatUser
             self.database = database
-            
             fetchMessages()
         }
         
-        @Published public var currentChatMessage = String()
+        public func isCurrentUser(message: ChatMessageModel) -> Bool {
+            message.fromID == FirebaseManager.shared.currentUser?.uid
+        }
         
-        func fetchMessages() {
-            guard let fromID = FirebaseManager.shared.currentUser?.uid else { return }
-            
-            FirebaseManager.shared.firestore
-                .collection("messages")
-                .document(fromID)
-                .collection(chatUser.uid)
-                .addSnapshotListener { querySnapShot, error in
-                    if let err = error {
-                        self.errorMessage = "failed to listen for messages: \(err.localizedDescription)"
-                        print(err)
-                        return
-                    }
-                    querySnapShot?.documents.forEach({ queryDocumentSnapShot in
-                        queryDocumentSnapShot.data()
-                    })
+        public func fetchMessages() {
+            database.fetchMessages(for: chatUser) { [weak self] result in
+                switch result {
+                case .success(let messages):
+                    self?.chatMessages = messages
+                    self?.count += 1 // scroll to bottom
+                case .failure(let error):
+                    self?.appError = error
                 }
+            }
         }
         
         public func handleSend() async {
             do {
+                guard !currentChatMessage.isEmpty else { return }
                 try await database.send(chatMessage: currentChatMessage, toID: chatUser.uid)
+                currentChatMessage = String()
+                count += 1
             } catch {
-                errorMessage = error.localizedDescription
+                appError = AppError.failedToSendMessage(description: error.localizedDescription)
             }
         }
     }
