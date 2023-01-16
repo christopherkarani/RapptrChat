@@ -55,11 +55,10 @@ struct ChatMessagesView: View {
     var body: some View {
         ZStack {
             messagesView
-            Text(viewModel.errorMessage)
         }
-        
         .navigationTitle(chatUser.email)
         .navigationBarTitleDisplayMode(.inline)
+        .errorAlert(error: $viewModel.error)
     }
 }
 
@@ -68,6 +67,7 @@ extension ChatMessagesView {
     class ViewModel: ObservableObject {
         let chatUser: ChatUser
         @Published var errorMessage: String = ""
+        @Published var error: AppError?
         private var database: DatabaseProtocol
         
         init(chatUser: ChatUser, database: DatabaseProtocol = FirebaseManager.shared) {

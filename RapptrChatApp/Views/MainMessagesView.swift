@@ -32,6 +32,7 @@ struct MainMessagesView: View {
                     guard (await viewModel.fetchCurrentUserInfo()) != nil else { return }
                 }
             }
+            .errorAlert(error: $viewModel.error)
         } //: Navigation View
     }
 }

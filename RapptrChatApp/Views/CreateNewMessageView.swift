@@ -52,6 +52,7 @@ struct CreateNewMessageView: View {
                     }
                 }
             }
+            .errorAlert(error: $viewModel.error)
         }
         .navigationViewStyle(.stack)
     }

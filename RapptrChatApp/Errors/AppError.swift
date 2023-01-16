@@ -20,6 +20,7 @@ public enum AppError: LocalizedError {
     case signOutError(description: String)
     case noUserImagePicked
     case errorFetchingAllUsers(description: String)
+    case errorFetchingMessages(description: String)
     case error(description: String)
     
     init?(error: AppError?) {
@@ -55,6 +56,8 @@ public enum AppError: LocalizedError {
             return "There was an error fetching all the users: \(description)"
         case .errorFormingUserDatat(let type):
             return "There was error forming User data: \(type)"
+        case .errorFetchingMessages(description: let description):
+            return "There was an error fetching messages: \(description)"
         }
     }
 }
