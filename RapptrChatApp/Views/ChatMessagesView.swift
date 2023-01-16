@@ -17,7 +17,6 @@ struct ChatMessagesView: View {
         self.viewModel = .init(chatUser: chatUser)
     }
     
-    
     func messageBubble(for message: ChatMessageModel) -> some View {
         VStack {
             if viewModel.isCurrentUser(message: message) {
@@ -52,8 +51,19 @@ struct ChatMessagesView: View {
     var messagesView: some View {
         VStack {
             ScrollView {
-                ForEach(viewModel.chatMessages) { message in
-                    messageBubble(for: message)
+                ScrollViewReader { proxy in
+                    VStack {
+                        ForEach(viewModel.chatMessages) { message in
+                            messageBubble(for: message)
+                        }
+                        HStack { Spacer() }
+                            .id(ViewModel.emptyScrollToString)
+                    }
+                    .onReceive(viewModel.$count) { _ in
+                        withAnimation(.easeOut(duration: 0.5)) {
+                            proxy.scrollTo(ViewModel.emptyScrollToString, anchor: .bottom)
+                        }
+                    }
                 }
             }
             .background(Color(.init(white: 0.95, alpha: 1)))
@@ -65,13 +75,12 @@ struct ChatMessagesView: View {
             }
         }
     }
-    
 
     var body: some View {
         ZStack {
             messagesView
-            Text(viewModel.errorMessage)
         }
+        .errorAlert(error: $viewModel.appError)
         
         .navigationTitle(chatUser.email)
         .navigationBarTitleDisplayMode(.inline)
@@ -84,8 +93,11 @@ extension ChatMessagesView {
         @Published var errorMessage: String = ""
         @Published public var currentChatMessage = String()
         @Published public var chatMessages = [ChatMessageModel]()
+        @Published public var appError: AppError?
+        @Published public var count = 0
         let chatUser: ChatUser
         private var database: DatabaseProtocol
+        static let emptyScrollToString = "Empty"
         
         init(chatUser: ChatUser, database: DatabaseProtocol = FirebaseManager.shared) {
             self.chatUser = chatUser
@@ -98,26 +110,15 @@ extension ChatMessagesView {
         }
         
         public func fetchMessages() {
-            guard let fromID = FirebaseManager.shared.currentUser?.uid else { return }
-            FirebaseManager.shared.firestore
-                .collection(FirebaseConstants.DatabaseCollections.messages)
-                .document(fromID)
-                .collection(chatUser.uid)
-                .order(by: FirebaseConstants.DatabaseCollections.timestamp)
-                .addSnapshotListener { querySnapShot, error in
-                    if let err = error {
-                        self.errorMessage = "failed to listen for messages: \(err.localizedDescription)"
-                        print(err)
-                        return
-                    }
-                    querySnapShot?.documentChanges.forEach { [weak self] change in
-                        if change.type == .added {
-                            let data = change.document.data()
-                            let documentID = change.document.documentID
-                            self?.chatMessages.append(.init(documentID: documentID,data: data))
-                        }
-                    }
+            database.fetchMessages(for: chatUser) { [weak self] result in
+                switch result {
+                case .success(let messages):
+                    self?.chatMessages = messages
+                    self?.count += 1 // scroll to bottom
+                case .failure(let error):
+                    self?.appError = error
                 }
+            }
         }
         
         public func handleSend() async {
@@ -125,9 +126,9 @@ extension ChatMessagesView {
                 guard !currentChatMessage.isEmpty else { return }
                 try await database.send(chatMessage: currentChatMessage, toID: chatUser.uid)
                 currentChatMessage = String()
-                
+                count += 1
             } catch {
-                errorMessage = error.localizedDescription
+                appError = AppError.failedToSendMessage(description: error.localizedDescription)
             }
         }
     }
