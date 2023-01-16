@@ -136,6 +136,26 @@ extension FirebaseManager: StorageProtocol {
 }
 
 extension FirebaseManager: DatabaseProtocol {
+    func fetchMessages(for chatUser: ChatUser, completion: @escaping (Result<[ChatMessageModel], AppError>) -> ()) {
+        guard let fromID = currentUser?.uid else { return }
+        firestore
+            .collection(FirebaseConstants.DatabaseCollections.messages)
+            .document(fromID)
+            .collection(chatUser.uid)
+            .order(by: FirebaseConstants.DatabaseCollections.timestamp)
+            .addSnapshotListener { querySnapShot, error in
+                if let err = error {
+                    print(err)
+                    completion(.failure(AppError.fetchMessages(description: err.localizedDescription)))
+                    return
+                }
+                let result = querySnapShot?.documentChanges
+                    .filter { $0.type == .added }
+                    .compactMap { ChatMessageModel(documentID:  $0.document.documentID, data: $0.document.data()) }
+                completion(.success(result ?? []))
+            }
+    }
+    
     func fetchAllUsers() async throws -> [ChatUser] {
         let documentSnapShot = try await FirebaseManager.shared.firestore.collection("users")
             .getDocuments()

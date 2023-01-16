@@ -10,8 +10,6 @@ import FirebaseFirestore
 
 struct ChatMessagesView: View {
     @ObservedObject var viewModel: ViewModel
-    
-    
     var chatUser: ChatUser
     
     init(chatUser: ChatUser) {
