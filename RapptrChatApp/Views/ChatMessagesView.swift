@@ -20,16 +20,32 @@ struct ChatMessagesView: View {
     }
     
     
-    func messageBubble(text: String) -> some View {
-        HStack {
-            Spacer()
-            HStack {
-                Text(text)
-                    .foregroundColor(.white)
+    func messageBubble(for message: ChatMessageModel) -> some View {
+        VStack {
+            if viewModel.isCurrentUser(message: message) {
+                HStack {
+                    Spacer()
+                    HStack {
+                        Text(message.text)
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(8)
+                }
+            } else {
+                HStack {
+                    
+                    HStack {
+                        Text(message.text)
+                            .foregroundColor(.black)
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    Spacer()
+                }
             }
-            .padding()
-            .background(Color.blue)
-            .cornerRadius(8)
         }
         .padding(.horizontal)
         .padding(.top, 8)
@@ -39,7 +55,7 @@ struct ChatMessagesView: View {
         VStack {
             ScrollView {
                 ForEach(viewModel.chatMessages) { message in
-                    messageBubble(text: message.text)
+                    messageBubble(for: message)
                 }
             }
             .background(Color(.init(white: 0.95, alpha: 1)))
@@ -67,26 +83,29 @@ struct ChatMessagesView: View {
 
 extension ChatMessagesView {
     @MainActor class ViewModel: ObservableObject {
-        let chatUser: ChatUser
         @Published var errorMessage: String = ""
+        @Published public var currentChatMessage = String()
+        @Published public var chatMessages = [ChatMessageModel]()
+        let chatUser: ChatUser
         private var database: DatabaseProtocol
         
         init(chatUser: ChatUser, database: DatabaseProtocol = FirebaseManager.shared) {
             self.chatUser = chatUser
             self.database = database
-            
             fetchMessages()
         }
         
-        @Published public var currentChatMessage = String()
-        @Published public var chatMessages = [ChatMessageModel]()
+        public func isCurrentUser(message: ChatMessageModel) -> Bool {
+            message.fromID == FirebaseManager.shared.currentUser?.uid
+        }
         
-        func fetchMessages() {
+        public func fetchMessages() {
             guard let fromID = FirebaseManager.shared.currentUser?.uid else { return }
             FirebaseManager.shared.firestore
-                .collection("messages")
+                .collection(FirebaseConstants.DatabaseCollections.messages)
                 .document(fromID)
                 .collection(chatUser.uid)
+                .order(by: FirebaseConstants.DatabaseCollections.timestamp)
                 .addSnapshotListener { querySnapShot, error in
                     if let err = error {
                         self.errorMessage = "failed to listen for messages: \(err.localizedDescription)"
@@ -100,11 +119,6 @@ extension ChatMessagesView {
                             self?.chatMessages.append(.init(documentID: documentID,data: data))
                         }
                     }
-//                    querySnapShot?.documents.forEach({ [weak self] queryDocumentSnapShot in
-//                        let data = queryDocumentSnapShot.data()
-//                        let documentID = queryDocumentSnapShot.documentID
-//                        self?.chatMessages.append(.init(documentID: documentID,data: data))
-//                    })
                 }
         }
         

@@ -166,7 +166,7 @@ extension FirebaseManager: DatabaseProtocol {
         let userData = UserData(email: email, uid: user.uid, profileIamageUrl: imageProfileurl.absoluteString)
         do {
             try await firestore
-                .collection(FirebaseConstants.users)
+                .collection(FirebaseConstants.DatabaseCollections.users)
                 .document(user.uid)
                 .setData(userData.data())
         } catch {
@@ -193,13 +193,13 @@ extension FirebaseManager: DatabaseProtocol {
         guard let fromID = currentUser?.uid else { throw AppError.unableToRetrieveCurrentUser }
         let messageData = ChatMessageModel.sendMessageData(chatMessage: chatMessage, toID: toID, fromID: fromID)
         let document = firestore
-            .collection(FirebaseConstants.messages)
+            .collection(FirebaseConstants.DatabaseCollections.messages)
             .document(fromID)
             .collection(toID)
             .document()
         try await document.setData(messageData)
         let reciepientDocument = firestore
-            .collection(FirebaseConstants.messages)
+            .collection(FirebaseConstants.DatabaseCollections.messages)
             .document(toID)
             .collection(fromID)
             .document()

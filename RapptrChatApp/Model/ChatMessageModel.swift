@@ -32,7 +32,7 @@ extension ChatMessageModel {
         let messageData = [FirebaseConstants.fromID: fromID,
                            FirebaseConstants.toID: toID,
                            FirebaseConstants.text: text,
-                           FirebaseConstants.timestamp: Timestamp()] as [String: Any]
+                           FirebaseConstants.DatabaseCollections.timestamp: Timestamp()] as [String: Any]
         return messageData
     }
     
@@ -40,7 +40,7 @@ extension ChatMessageModel {
         let messageData = [FirebaseConstants.fromID: fromID,
                            FirebaseConstants.toID: toID,
                            FirebaseConstants.text: chatMessage,
-                           FirebaseConstants.timestamp: Timestamp()] as [String: Any]
+                           FirebaseConstants.DatabaseCollections.timestamp: Timestamp()] as [String: Any]
         return messageData
     }
 }
