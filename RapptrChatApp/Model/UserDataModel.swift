@@ -9,6 +9,8 @@
 struct UserData {
     let email, uid, profileIamageUrl: String
     public func data() -> [String: Any] {
-        ["email": email, "uid": uid, "profileImageUrl": profileIamageUrl]
+        [FirebaseConstants.email: email,
+         FirebaseConstants.uid: uid,
+         FirebaseConstants.profileImageUrl: profileIamageUrl]
     }
 }

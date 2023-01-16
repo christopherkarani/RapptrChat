@@ -19,11 +19,12 @@ struct ChatMessagesView: View {
         self.viewModel = .init(chatUser: chatUser)
     }
     
-    var messageBubble: some View {
+    
+    func messageBubble(text: String) -> some View {
         HStack {
             Spacer()
             HStack {
-                Text("Messages go here")
+                Text(text)
                     .foregroundColor(.white)
             }
             .padding()
@@ -37,8 +38,8 @@ struct ChatMessagesView: View {
     var messagesView: some View {
         VStack {
             ScrollView {
-                ForEach(0..<20) { num in
-                    messageBubble
+                ForEach(viewModel.chatMessages) { message in
+                    messageBubble(text: message.text)
                 }
             }
             .background(Color(.init(white: 0.95, alpha: 1)))
@@ -65,7 +66,7 @@ struct ChatMessagesView: View {
 
 
 extension ChatMessagesView {
-    class ViewModel: ObservableObject {
+    @MainActor class ViewModel: ObservableObject {
         let chatUser: ChatUser
         @Published var errorMessage: String = ""
         private var database: DatabaseProtocol
@@ -78,10 +79,10 @@ extension ChatMessagesView {
         }
         
         @Published public var currentChatMessage = String()
+        @Published public var chatMessages = [ChatMessageModel]()
         
         func fetchMessages() {
             guard let fromID = FirebaseManager.shared.currentUser?.uid else { return }
-            
             FirebaseManager.shared.firestore
                 .collection("messages")
                 .document(fromID)
@@ -92,15 +93,27 @@ extension ChatMessagesView {
                         print(err)
                         return
                     }
-                    querySnapShot?.documents.forEach({ queryDocumentSnapShot in
-                        queryDocumentSnapShot.data()
-                    })
+                    querySnapShot?.documentChanges.forEach { [weak self] change in
+                        if change.type == .added {
+                            let data = change.document.data()
+                            let documentID = change.document.documentID
+                            self?.chatMessages.append(.init(documentID: documentID,data: data))
+                        }
+                    }
+//                    querySnapShot?.documents.forEach({ [weak self] queryDocumentSnapShot in
+//                        let data = queryDocumentSnapShot.data()
+//                        let documentID = queryDocumentSnapShot.documentID
+//                        self?.chatMessages.append(.init(documentID: documentID,data: data))
+//                    })
                 }
         }
         
         public func handleSend() async {
             do {
+                guard !currentChatMessage.isEmpty else { return }
                 try await database.send(chatMessage: currentChatMessage, toID: chatUser.uid)
+                currentChatMessage = String()
+                
             } catch {
                 errorMessage = error.localizedDescription
             }

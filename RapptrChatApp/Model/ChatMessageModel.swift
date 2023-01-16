@@ -8,15 +8,19 @@
 import Foundation
 import FirebaseFirestore
 
-struct ChatMessageModel {
+struct ChatMessageModel: Identifiable {
+    var id: String { documentID }
+    
     let fromID: String
     let toID: String
     let text: String
+    let documentID: String
     //let timeStamp: TimeStamp
 }
 
 extension ChatMessageModel {
-    init(data: [String: Any]) {
+    init(documentID: String, data: [String: Any]) {
+        self.documentID = documentID
         self.fromID = data[FirebaseConstants.fromID] as? String ?? ""
         self.toID = data[FirebaseConstants.toID] as? String ?? ""
         self.text = data[FirebaseConstants.text] as? String ?? ""
@@ -25,7 +29,18 @@ extension ChatMessageModel {
 
 extension ChatMessageModel {
     public func data() -> [String: Any] {
-        let messageData = ["fromId": fromID, "toId": toID, "text": text, "timestamp": Timestamp()] as [String: Any]
+        let messageData = [FirebaseConstants.fromID: fromID,
+                           FirebaseConstants.toID: toID,
+                           FirebaseConstants.text: text,
+                           FirebaseConstants.timestamp: Timestamp()] as [String: Any]
+        return messageData
+    }
+    
+    static func sendMessageData(chatMessage: String, toID: String, fromID: String) -> [String: Any] {
+        let messageData = [FirebaseConstants.fromID: fromID,
+                           FirebaseConstants.toID: toID,
+                           FirebaseConstants.text: chatMessage,
+                           FirebaseConstants.timestamp: Timestamp()] as [String: Any]
         return messageData
     }
 }
