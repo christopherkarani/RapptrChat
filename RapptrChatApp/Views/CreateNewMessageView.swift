@@ -62,7 +62,6 @@ extension CreateNewMessageView {
     @MainActor class ViewModel: ObservableObject {
         var database: DatabaseProtocol
         var error: AppError?
-        @Published var errorMessage: String = ""
         @Published var users = [ChatUser]()
         
         init(database: DatabaseProtocol = FirebaseManager.shared) {
@@ -76,7 +75,6 @@ extension CreateNewMessageView {
             do {
                 users = try await database.fetchAllUsers()
             } catch {
-                errorMessage = error.localizedDescription
                 self.error = AppError.errorFetchingAllUsers(description: error.localizedDescription)
             }
         }

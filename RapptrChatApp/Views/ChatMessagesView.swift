@@ -66,7 +66,6 @@ struct ChatMessagesView: View {
 extension ChatMessagesView {
     class ViewModel: ObservableObject {
         let chatUser: ChatUser
-        @Published var errorMessage: String = ""
         @Published var error: AppError?
         private var database: DatabaseProtocol
         
@@ -88,8 +87,7 @@ extension ChatMessagesView {
                 .collection(chatUser.uid)
                 .addSnapshotListener { querySnapShot, error in
                     if let err = error {
-                        self.errorMessage = "failed to listen for messages: \(err.localizedDescription)"
-                        print(err)
+                        self.error = AppError.errorFetchingMessages(description: err.localizedDescription)
                         return
                     }
                     querySnapShot?.documents.forEach({ queryDocumentSnapShot in
@@ -102,7 +100,7 @@ extension ChatMessagesView {
             do {
                 try await database.send(chatMessage: currentChatMessage, toID: chatUser.uid)
             } catch {
-                errorMessage = error.localizedDescription
+                self.error = AppError.errorSendingMessage(description: error.localizedDescription)
             }
         }
     }
