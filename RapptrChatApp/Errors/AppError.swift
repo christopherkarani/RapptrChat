@@ -59,17 +59,14 @@ public enum AppError: LocalizedError {
             return "There was an error fetching all the users: \(description)"
         case .errorFormingUserDatat(let type):
             return "There was error forming User data: \(type)"
-<<<<<<< HEAD
         case .errorFetchingMessages(description: let description):
             return "There was an error fetching messages: \(description)"
         case .errorSendingMessage(description: let description):
             return "There was an error while sending message: \(description)"
-=======
         case .fetchMessages(description: let description):
             return "There was an issue fetching messages: \(description)"
         case .failedToSendMessage(description: let description):
             return "Failed to send a message: \(description)"
->>>>>>> d1e34b38f3813e2ba01f922ffba8d64192d20f22
         }
     }
 }

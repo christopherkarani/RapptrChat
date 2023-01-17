@@ -83,17 +83,11 @@ struct ChatMessagesView: View {
         .errorAlert(error: $viewModel.appError)
         .navigationTitle(chatUser.email)
         .navigationBarTitleDisplayMode(.inline)
-        .errorAlert(error: $viewModel.error)
     }
 }
 
 
 extension ChatMessagesView {
-<<<<<<< HEAD
-    class ViewModel: ObservableObject {
-        let chatUser: ChatUser
-        @Published var error: AppError?
-=======
     @MainActor class ViewModel: ObservableObject {
         @Published var errorMessage: String = ""
         @Published public var currentChatMessage = String()
@@ -101,7 +95,6 @@ extension ChatMessagesView {
         @Published public var appError: AppError?
         @Published public var count = 0
         let chatUser: ChatUser
->>>>>>> d1e34b38f3813e2ba01f922ffba8d64192d20f22
         private var database: DatabaseProtocol
         static let emptyScrollToString = "Empty"
         
@@ -115,23 +108,7 @@ extension ChatMessagesView {
             message.fromID == FirebaseManager.shared.currentUser?.uid
         }
         
-<<<<<<< HEAD
-        func fetchMessages() {
-            guard let fromID = FirebaseManager.shared.currentUser?.uid else { return }
-            
-            FirebaseManager.shared.firestore
-                .collection("messages")
-                .document(fromID)
-                .collection(chatUser.uid)
-                .addSnapshotListener { querySnapShot, error in
-                    if let err = error {
-                        self.error = AppError.errorFetchingMessages(description: err.localizedDescription)
-                        return
-                    }
-                    querySnapShot?.documents.forEach({ queryDocumentSnapShot in
-                        queryDocumentSnapShot.data()
-                    })
-=======
+
         public func fetchMessages() {
             database.fetchMessages(for: chatUser) { [weak self] result in
                 switch result {
@@ -140,7 +117,7 @@ extension ChatMessagesView {
                     self?.count += 1 // scroll to bottom
                 case .failure(let error):
                     self?.appError = error
->>>>>>> d1e34b38f3813e2ba01f922ffba8d64192d20f22
+
                 }
             }
         }
@@ -152,11 +129,7 @@ extension ChatMessagesView {
                 currentChatMessage = String()
                 count += 1
             } catch {
-<<<<<<< HEAD
-                self.error = AppError.errorSendingMessage(description: error.localizedDescription)
-=======
                 appError = AppError.failedToSendMessage(description: error.localizedDescription)
->>>>>>> d1e34b38f3813e2ba01f922ffba8d64192d20f22
             }
         }
     }
