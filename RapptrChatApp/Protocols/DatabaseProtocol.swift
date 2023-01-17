@@ -18,4 +18,6 @@ protocol DatabaseProtocol {
     func fetchAllUsers() async throws -> [ChatUser]
     
     func send(chatMessage: String, toID: String) async throws
+    
+    func fetchMessages(for chatUser: ChatUser, completion: @escaping (Result<[ChatMessageModel], AppError>) -> ())
 }

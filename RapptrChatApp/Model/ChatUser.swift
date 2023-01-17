@@ -17,9 +17,9 @@ struct ChatUser: Identifiable {
 
 extension ChatUser {
     init(data: [String: Any]) {
-        uid = data["uid"] as? String ?? ""
-        email = data["email"] as? String ?? ""
-        profileImageUrl = data["profileImageUrl"] as? String ?? ""
+        uid = data[FirebaseConstants.uid] as? String ?? ""
+        email = data[FirebaseConstants.email] as? String ?? ""
+        profileImageUrl = data[FirebaseConstants.profileImageUrl] as? String ?? ""
     }
     
     var username: String {

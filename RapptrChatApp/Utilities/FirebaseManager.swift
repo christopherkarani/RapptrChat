@@ -27,7 +27,6 @@ public class FirebaseManager: NSObject, ObservableObject {
         self.firestore = Firestore.firestore()
         super.init()
         
-        
         auth.addStateDidChangeListener { _, user in
             if let currentUser = user {
                 self.currentUser = currentUser
@@ -38,8 +37,6 @@ public class FirebaseManager: NSObject, ObservableObject {
             }
         }
     }
-    
-     
 }
 
 
@@ -139,12 +136,32 @@ extension FirebaseManager: StorageProtocol {
 }
 
 extension FirebaseManager: DatabaseProtocol {
+    func fetchMessages(for chatUser: ChatUser, completion: @escaping (Result<[ChatMessageModel], AppError>) -> ()) {
+        guard let fromID = currentUser?.uid else { return }
+        firestore
+            .collection(FirebaseConstants.DatabaseCollections.messages)
+            .document(fromID)
+            .collection(chatUser.uid)
+            .order(by: FirebaseConstants.DatabaseCollections.timestamp)
+            .addSnapshotListener { querySnapShot, error in
+                if let err = error {
+                    print(err)
+                    completion(.failure(AppError.fetchMessages(description: err.localizedDescription)))
+                    return
+                }
+                let result = querySnapShot?.documentChanges
+                    .filter { $0.type == .added }
+                    .compactMap { ChatMessageModel(documentID:  $0.document.documentID, data: $0.document.data()) }
+                completion(.success(result ?? []))
+            }
+    }
+    
     func fetchAllUsers() async throws -> [ChatUser] {
         let documentSnapShot = try await FirebaseManager.shared.firestore.collection("users")
             .getDocuments()
-        return documentSnapShot.documents.map {
-            ChatUser(data: $0.data())
-        }
+        return documentSnapShot.documents
+            .map { ChatUser(data: $0.data()) }
+            .filter { $0.uid != currentUser?.uid}
     }
     
     func fetchCurrentUserInfo() async throws -> [String : Any] {
@@ -163,20 +180,13 @@ extension FirebaseManager: DatabaseProtocol {
         }
     }
     
-    struct UserData {
-        let email, uid, profileIamageUrl: String
-        public func data() -> [String: Any] {
-            ["email": email, "uid": uid, "profileImageUrl": profileIamageUrl]
-        }
-    }
+    
     func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser) async throws {
-        guard let email = user.email else {
-            throw AppError.errorFormingUserDatat(type: "email")
-        }
+        guard let email = user.email else { throw AppError.errorFormingUserDatat(type: "email")}
         let userData = UserData(email: email, uid: user.uid, profileIamageUrl: imageProfileurl.absoluteString)
         do {
             try await firestore
-                .collection("users")
+                .collection(FirebaseConstants.DatabaseCollections.users)
                 .document(user.uid)
                 .setData(userData.data())
         } catch {
@@ -185,11 +195,12 @@ extension FirebaseManager: DatabaseProtocol {
     }
     
     func storUserInformation(withUrl imageProfileurl: URL, for user: AuthenticatedUser, completion: @escaping (Result<(), AppError>) -> () ) {
-        let userData = ["email": user.email ?? "", "uid": user.uid, "profileImageUrl": imageProfileurl.absoluteString]
+        guard let email = user.email else { return }
+        let userData = UserData(email: email, uid: user.uid, profileIamageUrl: imageProfileurl.absoluteString)
         firestore
             .collection("users")
             .document(user.uid)
-            .setData(userData) { error in
+            .setData(userData.data()) { error in
                 if let error = error {
                     completion(.failure(.failedToStoreUserInfo(description: error.localizedDescription)))
                     return
@@ -200,19 +211,19 @@ extension FirebaseManager: DatabaseProtocol {
     
     func send(chatMessage: String, toID: String) async throws {
         guard let fromID = currentUser?.uid else { throw AppError.unableToRetrieveCurrentUser }
-        let message = ChatMessageModel(fromID: fromID, toID: toID, text: chatMessage)
+        let messageData = ChatMessageModel.sendMessageData(chatMessage: chatMessage, toID: toID, fromID: fromID)
         let document = firestore
-            .collection(FirebaseConstants.messages)
+            .collection(FirebaseConstants.DatabaseCollections.messages)
             .document(fromID)
             .collection(toID)
             .document()
-        try await document.setData(message.data())
+        try await document.setData(messageData)
         let reciepientDocument = firestore
-            .collection(FirebaseConstants.messages)
+            .collection(FirebaseConstants.DatabaseCollections.messages)
             .document(toID)
             .collection(fromID)
             .document()
-        try await reciepientDocument.setData(message.data())
+        try await reciepientDocument.setData(messageData)
     }
 }
 
