@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 struct ChatMessagesView: View {
     @ObservedObject var viewModel: ViewModel
+    
     var chatUser: ChatUser
     
     init(chatUser: ChatUser) {
@@ -126,11 +127,60 @@ extension ChatMessagesView {
             do {
                 guard !currentChatMessage.isEmpty else { return }
                 try await database.send(chatMessage: currentChatMessage, toID: chatUser.uid)
+                persistRecentMessage()
                 currentChatMessage = String()
                 count += 1
             } catch {
                 appError = AppError.failedToSendMessage(description: error.localizedDescription)
             }
+        }
+        
+        public func persistRecentMessage() {
+            guard let uid = FirebaseManager.shared.currentUser?.uid else { return }
+            let document = FirebaseManager.shared.firestore
+                .collection(FirebaseConstants.DatabaseCollections.recentMessages)
+                .document(uid)
+                .collection(FirebaseConstants.DatabaseCollections.messages)
+                .document(self.chatUser.uid)
+            
+            let data = [
+                FirebaseConstants.DatabaseCollections.timestamp: Timestamp(),
+                FirebaseConstants.text: self.currentChatMessage,
+                FirebaseConstants.fromID: uid,
+                FirebaseConstants.toID: chatUser.uid,
+                FirebaseConstants.profileImageUrl: chatUser.profileImageUrl,
+                FirebaseConstants.email: chatUser.email
+            ] as [String: Any]
+            
+            document.setData(data) { error in
+                if let err = error {
+                    self.appError = AppError.failedToSaveRecentMessage(description: err.localizedDescription)
+                    return
+                }
+            }
+            
+            guard let currentUser = FirebaseManager.shared.currentUser else { return }
+            let recipientRecentMessageDictionary = [
+                FirebaseConstants.DatabaseCollections.timestamp: Timestamp(),
+                FirebaseConstants.text: self.currentChatMessage,
+                FirebaseConstants.fromID: uid,
+                FirebaseConstants.toID: chatUser.uid,
+                FirebaseConstants.profileImageUrl: chatUser.profileImageUrl,
+                FirebaseConstants.email: chatUser.email
+            ] as [String : Any]
+            
+            FirebaseManager.shared.firestore
+                .collection(FirebaseConstants.DatabaseCollections.recentMessages)
+                .document(chatUser.uid)
+                .collection(FirebaseConstants.DatabaseCollections.messages)
+                .document(currentUser.uid)
+                .setData(recipientRecentMessageDictionary) { error in
+                    if let error = error {
+                        print("Failed to save recipient recent message: \(error)")
+                        return
+                    }
+                }
+            
         }
     }
 }

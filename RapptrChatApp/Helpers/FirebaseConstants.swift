@@ -21,5 +21,6 @@ enum FirebaseConstants {
         static let users = "users"
         static let messages = "messages"
         static let timestamp = "timestamp"
+        static let recentMessages = "recent_messages"
     }
 }

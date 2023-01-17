@@ -25,6 +25,7 @@ public enum AppError: LocalizedError {
     case fetchMessages(description: String)
     case error(description: String)
     case failedToSendMessage(description: String)
+    case failedToSaveRecentMessage(description: String)
     
     init?(error: AppError?) {
         guard let err = error else { return nil}
@@ -67,6 +68,8 @@ public enum AppError: LocalizedError {
             return "There was an issue fetching messages: \(description)"
         case .failedToSendMessage(description: let description):
             return "Failed to send a message: \(description)"
+        case .failedToSaveRecentMessage(description: let description):
+            return "Failed to save recent message: \(description)"
         }
     }
 }
